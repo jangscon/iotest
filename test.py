@@ -10,7 +10,7 @@ def read_large_file(filename):
         data = file.read()
     return data
 
-def measure_io_throughput(file_size, webdav_file_path,local_file_path, iter_num):
+def measure_io_throughput(file_size, webdav_file_path,local_file_path, log_file_path, iter_num):
     # 대량의 데이터 생성 (예: 100MB 데이터)
     large_data = "A" * file_size
     total_throughputs = [0,0,0,0]
@@ -56,12 +56,17 @@ def measure_io_throughput(file_size, webdav_file_path,local_file_path, iter_num)
 
         os.remove(local_file_path)
     
-    print("===================================")
-    print(f"webdav 쓰기 성능: {(total_throughputs[0]/iter_num):.2f} MB/s")
-    print(f"webdav 읽기 성능: {(total_throughputs[1]/iter_num):.2f} MB/s")
-    print(f"local 쓰기 성능: {(total_throughputs[2]/iter_num):.2f} MB/s")
-    print(f"local 읽기 성능: {(total_throughputs[3]/iter_num):.2f} MB/s")
-    print("===================================")
+    with open(log_file_path, 'a') as file:
+        file.write("===================================")
+        file.write(f"webdav 쓰기 성능: {(total_throughputs[0]/iter_num):.2f} MB/s")
+        file.write(f"webdav 읽기 성능: {(total_throughputs[1]/iter_num):.2f} MB/s")
+        file.write(f"local 쓰기 성능: {(total_throughputs[2]/iter_num):.2f} MB/s")
+        file.write(f"local 읽기 성능: {(total_throughputs[3]/iter_num):.2f} MB/s")
+        file.write("===================================\n")
 
 # 성능 측정 실행
-measure_io_throughput((100 * 1024 * 1024),"uploads/test_file.txt","test_file.txt",3)
+        
+webdav_file_path = "uploads/test_file.txt"
+local_file_path = "test_file.txt"
+log_file_path = "io_log.txt"
+measure_io_throughput((100 * 1024 * 1024),webdav_file_path,local_file_path,log_file_path,3)
