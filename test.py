@@ -55,7 +55,12 @@ def measure_io_throughput(file_size, webdav_file_path,local_file_path, log_file_
         total_throughputs[3] += read_throughput
 
         os.remove(local_file_path)
-    
+    print("===================================")
+    print(f"webdav 쓰기 성능: {(total_throughputs[0]/iter_num):.2f} MB/s")
+    print(f"webdav 읽기 성능: {(total_throughputs[1]/iter_num):.2f} MB/s")
+    print(f"local 쓰기 성능: {(total_throughputs[2]/iter_num):.2f} MB/s")
+    print(f"local 읽기 성능: {(total_throughputs[3]/iter_num):.2f} MB/s")
+    print("===================================\n")
     with open(log_file_path, 'a') as file:
         file.write("===================================")
         file.write(f"webdav 쓰기 성능: {(total_throughputs[0]/iter_num):.2f} MB/s")
