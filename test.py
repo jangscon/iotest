@@ -1,5 +1,6 @@
 import time
 import os
+import sys
 
 def write_large_file(filename, data):
     with open(filename, 'w') as file:
@@ -22,7 +23,6 @@ def measure_io_throughput(file_size, webdav_file_path,local_file_path, log_file_
         end_write_time = time.time()
         write_elapsed_time = end_write_time - start_write_time
         write_throughput = len(large_data) / write_elapsed_time / (1024 * 1024)  # MB/s
-        print(f"webdav 쓰기 성능: {write_throughput:.2f} MB/s")
         total_throughputs[0] += write_throughput
 
         # 파일 읽기 성능 측정
@@ -31,7 +31,6 @@ def measure_io_throughput(file_size, webdav_file_path,local_file_path, log_file_
         end_read_time = time.time()
         read_elapsed_time = end_read_time - start_read_time
         read_throughput = len(read_data) / read_elapsed_time / (1024 * 1024)  # MB/s
-        print(f"webdav 읽기 성능: {read_throughput:.2f} MB/s")
         total_throughputs[1] += read_throughput
 
         os.remove(webdav_file_path)
@@ -42,7 +41,6 @@ def measure_io_throughput(file_size, webdav_file_path,local_file_path, log_file_
         end_write_time = time.time()
         write_elapsed_time = end_write_time - start_write_time
         write_throughput = len(large_data) / write_elapsed_time / (1024 * 1024)  # MB/s
-        print(f"local 쓰기 성능: {write_throughput:.2f} MB/s")
         total_throughputs[2] += write_throughput
 
         # 파일 읽기 성능 측정
@@ -51,7 +49,6 @@ def measure_io_throughput(file_size, webdav_file_path,local_file_path, log_file_
         end_read_time = time.time()
         read_elapsed_time = end_read_time - start_read_time
         read_throughput = len(read_data) / read_elapsed_time / (1024 * 1024)  # MB/s
-        print(f"local 읽기 성능: {read_throughput:.2f} MB/s")
         total_throughputs[3] += read_throughput
 
         os.remove(local_file_path)
@@ -70,8 +67,30 @@ def measure_io_throughput(file_size, webdav_file_path,local_file_path, log_file_
         file.write("===================================\n")
 
 # 성능 측정 실행
-        
-webdav_file_path = "uploads/test_file.txt"
-local_file_path = "test_file.txt"
-log_file_path = "io_log.txt"
-measure_io_throughput((100 * 1024 * 1024),webdav_file_path,local_file_path,log_file_path,3)
+
+def convert_to_bytes(file_size):
+    size_unit = file_size[-2:].upper()
+    size_value = int(file_size[:-2])
+
+    if size_unit == "GB":
+        return size_value * (1024 ** 3)
+    elif size_unit == "MB":
+        return size_value * (1024 ** 2)
+    else:
+        raise ValueError("지원되지 않는 크기 단위입니다. (지원 단위: GB, MB)")
+
+if __name__ == "__main__":
+    
+    parameters = sys.argv[1:]
+    
+    file_size = convert_to_bytes(parameters[0])
+    iter_num = parameters[1]
+    webdav_file_path = "uploads/test_file.txt"
+    local_file_path = "test_file.txt"
+    log_file_path = "io_log.txt"
+    
+    measure_io_throughput(file_size,
+                          webdav_file_path,
+                          local_file_path,
+                          log_file_path,
+                          iter_num)
