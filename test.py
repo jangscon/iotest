@@ -92,7 +92,7 @@ if __name__ == "__main__":
     parameters = sys.argv[1:]
     
     file_size = convert_to_bytes(parameters[0])
-    iter_num = parameters[1]
+    iter_num = int(parameters[1])
     webdav_file_path = "uploads/test_file.txt"
     local_file_path = "test_file.txt"
     log_file_path = "io_log.txt"
